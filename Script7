@@ -1,0 +1,32 @@
+head(airquality)
+
+reg.m <- lm(Ozone~Solar.R+Wind+Temp, data=airquality)
+summary(reg.m)
+
+# 다중공선성
+vif(reg.m)
+
+# 변수선택
+if(!require(leaps)) install.packages("leaps"); library(leaps)
+m1 <- regsubsets(Ozone~., data=airquality)
+
+plot(m1, scale="adjr2")
+plot(m1, scale="bic")
+plot(m1, scale="Cp")
+
+airquality %>% dim
+sel <- sample(1:153,120)
+train = airquality[sel, ]
+test = airquality[-sel, ]
+
+model1 <- lm(Ozone~., data=train)
+model2 <- lm(Ozone~.-Month-Day, data=train)
+model3 <- lm(Ozone~.-Day, data=train)
+
+pred1 <- predict(model1, newdata=test)
+pred2 <- predict(model2, newdata=test)
+pred3 <- predict(model3, newdata=test)
+
+(pred1-test$Ozone)^2 %>% sum(., na.rm=T)
+(pred2-test$Ozone)^2 %>% sum(., na.rm=T)
+(pred3-test$Ozone)^2 %>% sum(., na.rm=T)
