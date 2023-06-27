@@ -1,0 +1,70 @@
+# 일변량
+#   자료의 유형 
+#   범주형(명복척도, 순서척도)
+#   연속형(등간척도, 비척도)
+
+table(aircraft$Period)
+table(aircraft$Period) %>% barplot
+
+head(aircraft)
+aircraft$Length %>% summary
+# 대표값
+평균, 중위수
+mean(aircraft$Length)
+median(aircraft$Length)
+aircraft$Length %>% sqrt %>% hist
+box1 <- aircraft$Length %>% boxplot
+box1 = aircraft$Length %>% boxplot
+aircraft$Length %>% boxplot -> box1
+box1$out %>% length()
+
+library(dplyr)
+aircraft %>% 
+  filter(Length %in% box1$out)
+
+이변량 
+범주형 * 범주형
+table(mtcars$cyl, mtcars$gear)
+table(mtcars$cyl, mtcars$gear) %>% t %>% 
+  barplot(beside=T, legend=rownames(.))
+table(mtcars$cyl, mtcars$gear) %>% 
+  chisq.test()
+table(mtcars$cyl, mtcars$gear) %>% 
+  fisher.test()
+
+범주형 * 연속형
+## 1. 상자그림을 통해서 집단 간 차이를 
+head(aircraft)
+boxplot(log(Length)~Period, aircraft)
+
+## 2. 요약값
+aircraft %>% 
+  group_by(Period) %>% 
+  mutate(LnLength=log(Length)) %>% 
+  summarise(n=n(), mean=mean(LnLength),
+            sd=sd(LnLength))
+
+## 3. 일원배치분산분석
+aircraft %>% 
+  mutate(LnLength=log(Length)) ->aircraft2
+
+bartlett.test(LnLength~factor(Period), aircraft2)
+
+oneway.test(LnLength~factor(Period), aircraft2)
+kruskal.test(LnLength~factor(Period), aircraft2)
+
+연속형 * 연속형
+head(cars)
+
+# 1. 시각적
+plot(dist~speed, cars)
+
+# 2. 상관성
+cor(cars$dist, cars$speed)
+cor.test(cars$dist, cars$speed)
+
+# 3. 인과관계
+ y = ax + b 
+ dist = -17.579 + 3.935*speed
+ 
+lm(dist~speed+I(speed^2)+I(speed^3), cars) %>% summary
