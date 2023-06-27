@@ -1,0 +1,36 @@
+cars
+# 1. 데이터 시각화
+plot(dist~speed, cars, pch=16)
+
+library(ggplot2)
+ggplot(data=cars, aes(x=speed, y=dist))+
+  geom_point()+
+  geom_smooth(method="lm")+
+  theme_classic()
+
+# 2. 상관계수
+  cor(cars$speed, cars$dist) #0.08068949
+  
+# 3. 모형 세우기
+out <- lm(dist~speed, data=cars)  
+out %>% summary
+
+(cars$dist - mean(cars$dist))^2 %>% sum
+
+(cars$dist - fitted(out))^2 %>% sum
+(fitted(out)- mean(cars$dist))^2 %>% sum
+
+21185.46/32538.98
+
+# 4. 새로운 값에서의 예측값
+predict(out, newdata=data.frame(speed=27))
+predict(out, newdata=data.frame(speed=27),
+        interval="confidence")
+predict(out, newdata=data.frame(speed=c(27,28,29)),
+        interval="prediction")
+
+# 5. 결과 시각화
+ggplot(data=cars, aes(x=speed, y=dist))+
+  geom_point()+
+  geom_smooth(method="lm")+
+  theme_classic()
